@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/historico_page.dart';
 import 'definir_imc.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: MainApp()));
 }
 
 double peso = 0.0;
@@ -19,6 +20,7 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   TextEditingController controllerPeso = TextEditingController();
   TextEditingController controllerAltura = TextEditingController();
+  List<String> historico = [];
 
   double resultadoImc = 0.0;
   String resultadoImcTexto = '';
@@ -94,9 +96,27 @@ class _MainAppState extends State<MainApp> {
                         resultadoImcTexto = resultadoImc > 0
                             ? resultadoImc.toStringAsFixed(2)
                             : '';
+
+                        historico.add("IMC: $resultadoImc - ${imcAnalisado()}");
                       });
                     },
                     child: const Text('Calcular'),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: 200,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              HistoricoPage(historico: historico),
+                        ),
+                      );
+                    },
+                    child: const Text("Ver histórico"),
                   ),
                 ),
                 const SizedBox(height: 80),
