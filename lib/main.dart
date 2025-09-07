@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/historico_page.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'definir_imc.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox("historico");
+  await Hive.openBox("analise");
   runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: MainApp()));
 }
 
 double peso = 0.0;
 double altura = 0.0;
 double imcParaAnalisar = 0.0;
+var historicoImcBox = Hive.box("historico");
+var historicoAnalisesBox = Hive.box("analise");
 
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
@@ -93,11 +100,9 @@ class _MainAppState extends State<MainApp> {
                         altura = double.tryParse(controllerAltura.text) ?? 0.0;
                         resultadoImc = calcularImc(peso, altura);
                         imcParaAnalisar = resultadoImc;
-                        resultadoImcTexto = resultadoImc > 0
-                            ? resultadoImc.toStringAsFixed(2)
-                            : '';
-
-                        historico.add("IMC: $resultadoImc - ${imcAnalisado()}");
+                        resultadoImcTexto = resultadoImc.toStringAsFixed(2);
+                        historicoImcBox.add(resultadoImcTexto);
+                        historicoAnalisesBox.add(imcAnalisado());
                       });
                     },
                     child: const Text('Calcular'),
@@ -111,8 +116,7 @@ class _MainAppState extends State<MainApp> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              HistoricoPage(historico: historico),
+                          builder: (context) => HistoricoPage(),
                         ),
                       );
                     },
